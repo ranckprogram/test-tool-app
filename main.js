@@ -1,34 +1,40 @@
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
+const menuConfig = require('./src/menu')
+var event = require('./src/event.js')  
 
-app.on('ready', function createWindow () {
-    // 可以创建多个渲染进程
-    let win1 = new BrowserWindow({
-        width: 1024,
-        height: 768
-    })
+function createWindow() {
+  let windowOptions = {
+    width: 1220,
+    height: 780,
+    minWidth: 1220,
+    minHeight: 780,
+    title: app.getName()
+  }
 
-    let win2 = new BrowserWindow({
-        width: 1024,
-        height: 768
-    })
+  if (process.platform === 'linux') {
+    windowOptions.icon = path.join(__dirname, '/app/ico/your-ico.png')
+  }
 
-    // 渲染进程中的web页面可以加载本地文件
-    win1.loadFile('index.html')
+  mainWindow = new BrowserWindow(windowOptions);
+  mainWindow.webContents.openDevTools()  // 打开调试工具
 
-    // 也可以加载远程页面
-    win2.loadURL('http://www.baidu.com')
+  mainWindow.loadFile('index.html')
 
-    // 记得在页面被关闭后清除该变量，防止内存泄漏
-    win1.on('closed', function () {
-        win1 = null
-    })
-    win2.on('closed', () => {
-        win2 = null
-    })
+  mainWindow.on('closed', function () {
+    mainWindow = null
+  })
+}
+
+app.on('ready', function () {
+
+  const menu = Menu.buildFromTemplate(menuConfig)
+  Menu.setApplicationMenu(menu) // 设置菜单部分
+  createWindow()
+
+  event.on('onChangeFile', function(f) {console.log(f)})
 
 })
 
-// 页面全部关闭后关闭主进程，这里在不同平台可能有不同的处理方式，这里不深入研究
 app.on('window-all-closed', () => {
-    app.quit()
+  app.quit()
 })
