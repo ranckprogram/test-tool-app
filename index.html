@@ -6,14 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>自动化注释小工具</title>
+    <style>
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .btn {
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            border: 1px solid #ddd;
+            padding: 0 20px;
+            color: #fff;
+            background: #f86;
+            border-radius: 4px;
+        }
+
+        .wrapper {
+            text-align: center;
+            margin-top: 240px;
+        }
+    </style>
 </head>
 
 <body>
-    hello world
+    <div class="wrapper">
+        <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
+
+    </div>
 </body>
 
 <script>
 
+    const electron = require('electron')
+    const ipc = require('electron').ipcRenderer
+    const xlsx = require('node-xlsx');
+
+    const getEl = function (selector) {
+        return document.querySelector(selector)
+    }
+    
+
+    const { dialog } = electron.remote;
+    getEl('#handleClickFile').addEventListener('click', function () {
+        const reply = ipc.sendSync('synchronous-message', 'ping')
+        console.dir(reply)
+        dialog.showOpenDialog(null, {
+            title: '请选择文件夹',
+            properties: ['openFile'], // 'openDirectory'  'multiSelections'
+            defaultPath: '/Users/<username>/Documents/'
+        }, function (params) {
+            console.dir(params)
+            var obj = xlsx.parse(params[0]);
+            console.log(JSON.stringify(obj));
+
+        })
+    }, false)  
 </script>
 
 </html>

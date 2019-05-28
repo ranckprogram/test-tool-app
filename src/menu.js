@@ -1,5 +1,5 @@
 const { dialog } = require('electron')
-var event = require('./event.js')  
+var event = require('./event.js')
 
 const menuConfig = [
     {
@@ -17,11 +17,12 @@ const menuConfig = [
                             // { name: 'Movies', extensions: ['mkv', 'avi', 'mp4'] },
                             // { name: 'Custom File Type', extensions: ['as'] },
                             { name: 'All Files', extensions: ['*'] }
-                        ],
-                        function(filepaths) { 
-                           
-                            event.emit('onChangeFile', filepaths)
-                        }
+                        ]
+
+                    }, function (filepaths) {
+                        console.dir(333)
+
+                        event.emit('onChangeFile', filepaths)
                     })
                 }
             },
