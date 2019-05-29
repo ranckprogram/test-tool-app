@@ -27,15 +27,76 @@
             text-align: center;
             margin-top: 240px;
         }
+
+        .template {
+            /* 导入的excel模板*/
+            margin-top: 20px;
+        }
+
+        .rn-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+
+        .rn-table td {
+            padding: 4px 12px;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
         <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
-
+        <section class="template">
+            <table class="rn-table" id="showTemplate">
+                <thead>
+                    <tr>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            3
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </div>
 </body>
+<script src="./src/js/tools.js"></script>
+<script src="./src/js/createTable.js"></script>
 
 <script>
 
@@ -46,7 +107,8 @@
     const getEl = function (selector) {
         return document.querySelector(selector)
     }
-    
+
+    var showTemplateEl = getEl('#showTemplate')
 
     const { dialog } = electron.remote;
     getEl('#handleClickFile').addEventListener('click', function () {
@@ -56,13 +118,20 @@
             title: '请选择文件夹',
             properties: ['openFile'], // 'openDirectory'  'multiSelections'
             defaultPath: '/Users/<username>/Documents/'
-        }, function (params) {
-            console.dir(params)
-            var obj = xlsx.parse(params[0]);
-            console.log(JSON.stringify(obj));
+        }, function (files) {
+            files.forEach(file => {
+                const xlsxDate = xlsx.parse(file);
+                const sheetData = sheetFormat(xlsxDate);
+                showTemplateEl.innerHTML = createTable(sheetData)
+
+            });
 
         })
-    }, false)  
+    }, false);
+
+
+
+
 </script>
 
 </html>
