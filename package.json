@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . --enable-logging",
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-packager . myClient --win --out ../myClient --arch=x64 --app-version=0.0.1 --electron-version=5.0.2"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "excel-parser": "^0.2.2",
+    "iconv-lite": "^0.4.24",
     "node-xlsx": "^0.15.0"
   }
 }

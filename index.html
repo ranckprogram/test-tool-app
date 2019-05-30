@@ -37,6 +37,7 @@
             width: 100%;
             border-collapse: collapse;
             border: 1px solid #ddd;
+            table-layout: fixed;
         }
 
         .rn-table td {
@@ -50,48 +51,7 @@
     <div class="wrapper">
         <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
         <section class="template">
-            <table class="rn-table" id="showTemplate">
-                <thead>
-                    <tr>
-                        <th>1</th>
-                        <th>2</th>
-                        <th>3</th>
-                        <th>4</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            3
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <table class="rn-table" id="showTemplate"></table>
         </section>
     </div>
 </body>
@@ -103,6 +63,9 @@
     const electron = require('electron')
     const ipc = require('electron').ipcRenderer
     const xlsx = require('node-xlsx');
+    const core = require('./src/core')
+    const updateFileMatchPlace = core.updateFileMatchPlace
+
 
     const getEl = function (selector) {
         return document.querySelector(selector)
@@ -122,6 +85,23 @@
             files.forEach(file => {
                 const xlsxDate = xlsx.parse(file);
                 const sheetData = sheetFormat(xlsxDate);
+                console.log(sheetData)
+
+                // 
+                const params = sheetData.bodyList
+                    .filter(item => {
+                        return item[1] && item[6]
+                    })
+                    .map(item => {
+                        return {
+                            key: item[1],
+                            value: item[6]
+                        }
+                    })
+                console.dir(params)
+                updateFileMatchPlace('./test/base.txt', params)
+
+                // 
                 showTemplateEl.innerHTML = createTable(sheetData)
 
             });
