@@ -9,10 +9,9 @@ ipc.on('synchronous-message', function (event, arg) {
 
 function createWindow() {
   let windowOptions = {
-    width: 1220,
-    height: 780,
-    minWidth: 1220,
-    minHeight: 780,
+    width: 800, 
+    height: 600,
+    transparent: true,
     title: app.getName(),
     webPreferences: {
       nodeIntegration: true
@@ -24,6 +23,8 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow(windowOptions);
+  // mainWindow.maximize()
+
   mainWindow.webContents.openDevTools()  // 打开调试工具
 
   mainWindow.loadFile('index.html')

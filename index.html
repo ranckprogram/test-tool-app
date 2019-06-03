@@ -7,6 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>自动化注释小工具</title>
     <style>
+        body {
+            /* background: #0d0d0d; */
+        }
+
         a {
             color: inherit;
             text-decoration: none;
@@ -14,18 +18,19 @@
 
         .btn {
             display: inline-block;
-            height: 40px;
-            line-height: 40px;
+            height: 36px;
+            line-height: 36px;
             border: 1px solid #ddd;
             padding: 0 20px;
             color: #fff;
             background: #f86;
             border-radius: 4px;
+            text-align: center;
+            vertical-align: middle;
         }
 
         .wrapper {
-            text-align: center;
-            margin-top: 240px;
+            margin-top: 40px;
         }
 
         .template {
@@ -44,15 +49,78 @@
             padding: 4px 12px;
             border: 1px solid #ddd;
         }
+
+        .main {
+            width: 80%;
+            margin: auto;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .main>li {
+            display: flex;
+            list-style: none;
+            margin-bottom: 12px;
+        }
+
+        .main label {
+            flex: 3;
+            line-height: 36px;
+        }
+
+        .main .btn {
+            flex: 3;
+        }
+
+        .showPath {
+            flex: 10;
+            height: 30px;
+            line-height: 30px;
+            vertical-align: middle;
+            outline: none;
+        }
+
+        .logs {
+            flex: 15;
+            height: 120px;
+            border: 1px solid #ddd;
+        }
+
+        .logs p {
+            color: #555;
+            line-height: 20px;
+            margin: 0;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
-        <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
+        <ul class="main">
+            <li>
+                <label for="">选择模板:</label>
+                <input type="text" class="showPath">
+                <a href="javascript:;" class="btn" id="handleClickFile">浏览</a>
+            </li>
+            <li>
+                <label for="">选择目标:</label>
+                <input type="text" class="showPath">
+                <a href="javascript:;" class="btn" id="handleClickFolder">浏览</a>
+            </li>
+            <li>
+                <label for="">日志:</label>
+                <div class="logs">
+                    <p>hah</p>
+                </div>
+            </li>
+            <li>
+                <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
+            </li>
+        </ul>
+        <!-- <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
         <section class="template">
             <table class="rn-table" id="showTemplate"></table>
-        </section>
+        </section> -->
     </div>
 </body>
 <script src="./src/js/tools.js"></script>
@@ -64,6 +132,7 @@
     const ipc = require('electron').ipcRenderer
     const xlsx = require('node-xlsx');
     const core = require('./src/core')
+
     const updateFileMatchPlace = core.updateFileMatchPlace
 
 
@@ -71,12 +140,13 @@
         return document.querySelector(selector)
     }
 
-    var showTemplateEl = getEl('#showTemplate')
+    // var showTemplateEl = getEl('#showTemplate')
 
     const { dialog } = electron.remote;
+
+    let templateData
+
     getEl('#handleClickFile').addEventListener('click', function () {
-        const reply = ipc.sendSync('synchronous-message', 'ping')
-        console.dir(reply)
         dialog.showOpenDialog(null, {
             title: '请选择文件夹',
             properties: ['openFile'], // 'openDirectory'  'multiSelections'
@@ -85,10 +155,7 @@
             files.forEach(file => {
                 const xlsxDate = xlsx.parse(file);
                 const sheetData = sheetFormat(xlsxDate);
-                console.log(sheetData)
-
-                // 
-                const params = sheetData.bodyList
+                const templateData = sheetData.bodyList
                     .filter(item => {
                         return item[1] && item[6]
                     })
@@ -98,16 +165,57 @@
                             value: item[6]
                         }
                     })
-                console.dir(params)
-                updateFileMatchPlace('./test/base.txt', params)
 
-                // 
-                showTemplateEl.innerHTML = createTable(sheetData)
+                console.dir(templateData)
 
             });
 
         })
     }, false);
+
+    getEl("#handleClickFolder").addEventListener('click', function () {
+        dialog.showOpenDialog(null, {
+            title: '请选择文件夹',
+            properties: ['openDirectory'],
+            defaultPath: '/Users/<username>/Documents/'
+        }, function (pathList) {
+            console.dir(pathList)
+            
+        })
+    }, false)
+
+    getEl('#handleClickExecu').addEventListener('click', function () {
+        updateFileMatchPlace('./test/base.txt', params)
+    }, false)
+    // getEl('#handleClickFile').addEventListener('click', function () {
+    //     const reply = ipc.sendSync('synchronous-message', 'ping')
+    //     console.dir(reply)
+    //     dialog.showOpenDialog(null, {
+    //         title: '请选择文件夹',
+    //         properties: ['openFile'], // 'openDirectory'  'multiSelections'
+    //         defaultPath: '/Users/<username>/Documents/'
+    //     }, function (files) {
+    //         files.forEach(file => {
+    //             const xlsxDate = xlsx.parse(file);
+    //             const sheetData = sheetFormat(xlsxDate);
+    //             const params = sheetData.bodyList
+    //                 .filter(item => {
+    //                     return item[1] && item[6]
+    //                 })
+    //                 .map(item => {
+    //                     return {
+    //                         key: item[1],
+    //                         value: item[6]
+    //                     }
+    //                 })
+    //             updateFileMatchPlace('./test/base.txt', params)
+
+    //             showTemplateEl.innerHTML = createTable(sheetData)
+
+    //         });
+
+    //     })
+    // }, false);
 
 
 
