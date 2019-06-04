@@ -7,8 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>自动化注释小工具</title>
     <style>
+        html,body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             /* background: #0d0d0d; */
+            background-image: url("./src/bg.jpg");
+            background-repeat: no-repeat;
+            background-size: 60%;
+            background-position: right bottom;
         }
 
         a {
@@ -30,7 +39,7 @@
         }
 
         .wrapper {
-            margin-top: 40px;
+            padding-top: 40px;
         }
 
         .template {
@@ -99,12 +108,12 @@
         <ul class="main">
             <li>
                 <label for="">选择模板:</label>
-                <input type="text" class="showPath">
+                <input type="text" class="showPath" id="showTempletePath">
                 <a href="javascript:;" class="btn" id="handleClickFile">浏览</a>
             </li>
             <li>
                 <label for="">选择目标:</label>
-                <input type="text" class="showPath">
+                <input type="text" class="showPath" id="showFolderPath">
                 <a href="javascript:;" class="btn" id="handleClickFolder">浏览</a>
             </li>
             <li>
@@ -146,16 +155,34 @@
 
     let templateData
 
+
+    function setTempletePath(path) {
+        getEl("#showTempletePath").value = path
+    }
+
+    function setFolderPath(path) {
+        getEl("#showFolderPath").value = path
+
+    }
+
+    function getExelData() {
+
+    }
+
     getEl('#handleClickFile').addEventListener('click', function () {
         dialog.showOpenDialog(null, {
             title: '请选择文件夹',
-            properties: ['openFile'], // 'openDirectory'  'multiSelections'
+            properties: ['openFile'],
             defaultPath: '/Users/<username>/Documents/'
         }, function (files) {
             files.forEach(file => {
+
+                setTempletePath(file)
+
                 const xlsxDate = xlsx.parse(file);
                 const sheetData = sheetFormat(xlsxDate);
-                const templateData = sheetData.bodyList
+
+                templateData = sheetData.bodyList
                     .filter(item => {
                         return item[1] && item[6]
                     })
@@ -180,7 +207,9 @@
             defaultPath: '/Users/<username>/Documents/'
         }, function (pathList) {
             console.dir(pathList)
-            
+            pathList.forEach(path => {
+                setFolderPath(path)
+            })
         })
     }, false)
 
