@@ -53,3 +53,9 @@ npm run pack
 
 ![avatar](/screen/screen02.jpg)
 
+> 实际生成的信txt样例
+
+![avatar](/screen/screen03.jpg)
+
+
+
