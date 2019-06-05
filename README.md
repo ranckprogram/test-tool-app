@@ -55,7 +55,7 @@ npm run pack
 
 > 实际生成的信txt样例
 
-![avatar](/screen/screen03.jpg)
+![avatar](/screen/screen03.png)
 
 
 
