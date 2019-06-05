@@ -7,11 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>自动化注释小工具</title>
     <style>
-        html,body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
+
         body {
             /* background: #0d0d0d; */
             background-image: url("./src/bg.jpg");
@@ -126,10 +128,6 @@
                 <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
             </li>
         </ul>
-        <!-- <a href="javascript:;" id="handleClickFile" class="btn">选择文件</a>
-        <section class="template">
-            <table class="rn-table" id="showTemplate"></table>
-        </section> -->
     </div>
 </body>
 <script src="./src/js/tools.js"></script>
@@ -137,6 +135,8 @@
 
 <script>
 
+    const fs = require('fs')
+    const path = require('path')
     const electron = require('electron')
     const ipc = require('electron').ipcRenderer
     const xlsx = require('node-xlsx');
@@ -144,16 +144,14 @@
 
     const updateFileMatchPlace = core.updateFileMatchPlace
 
-
     const getEl = function (selector) {
         return document.querySelector(selector)
     }
 
-    // var showTemplateEl = getEl('#showTemplate')
-
     const { dialog } = electron.remote;
 
     let templateData
+    let foldPath
 
 
     function setTempletePath(path) {
@@ -161,8 +159,8 @@
     }
 
     function setFolderPath(path) {
+        foldPath = path
         getEl("#showFolderPath").value = path
-
     }
 
     function getExelData() {
@@ -187,9 +185,25 @@
                         return item[1] && item[6]
                     })
                     .map(item => {
+
                         return {
                             key: item[1],
-                            value: item[6]
+                            value: `[Documentation]    *案例源：* ${item[0]}
+...
+...    *案例编号：${item[1]}
+...
+...    *案例描述：${item[3]}
+...
+...    *前置条件：${item[4]}
+...
+...    *步骤描述：${item[5]}
+...
+...    *预期结果：${item[6]}
+...
+...    *作者：* ${item[7]}
+...
+...    *日期：* ${item[8]}
+                            `
                         }
                     })
 
@@ -214,40 +228,18 @@
     }, false)
 
     getEl('#handleClickExecu').addEventListener('click', function () {
-        updateFileMatchPlace('./test/base.txt', params)
+        // const allFiles = fs.readdirSync(foldPath, "utf-8")
+        // const txtFiles = allFiles.filter(file => {
+        //     if (file.endsWith('.txt')) {
+        //         return file
+        //     }
+        // })
+        // console.dir(txtFiles)
+        updateFileMatchPlace('./test/base.txt', templateData) // 正则匹配
+        // 逐行匹配
+
+
     }, false)
-    // getEl('#handleClickFile').addEventListener('click', function () {
-    //     const reply = ipc.sendSync('synchronous-message', 'ping')
-    //     console.dir(reply)
-    //     dialog.showOpenDialog(null, {
-    //         title: '请选择文件夹',
-    //         properties: ['openFile'], // 'openDirectory'  'multiSelections'
-    //         defaultPath: '/Users/<username>/Documents/'
-    //     }, function (files) {
-    //         files.forEach(file => {
-    //             const xlsxDate = xlsx.parse(file);
-    //             const sheetData = sheetFormat(xlsxDate);
-    //             const params = sheetData.bodyList
-    //                 .filter(item => {
-    //                     return item[1] && item[6]
-    //                 })
-    //                 .map(item => {
-    //                     return {
-    //                         key: item[1],
-    //                         value: item[6]
-    //                     }
-    //                 })
-    //             updateFileMatchPlace('./test/base.txt', params)
-
-    //             showTemplateEl.innerHTML = createTable(sheetData)
-
-    //         });
-
-    //     })
-    // }, false);
-
-
-
 
 </script>
 

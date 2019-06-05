@@ -20,8 +20,10 @@ function sheetFormat(data, isEmpty) {
     let headerLine
     let bodyList = []
     data.forEach(function (sheets) {
-        sheets.data.forEach(function (sheet) {
-            if (once) {
+        sheets.data.forEach(function (sheet, index) {
+            if (index < 1) {
+
+            } else if (once) {
                 headerLine = sheet
                 once = false
             } else {
