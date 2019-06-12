@@ -102,6 +102,21 @@
             line-height: 20px;
             margin: 0;
         }
+
+        .logs span {
+            padding-right: 10px;
+        }
+
+        .logs span.success {
+            color: #5cb85c;
+        }
+
+        .logs span.error {
+            color: #d9534f;
+        }
+        .logs time {
+            padding-right: 10px;
+        }
     </style>
 </head>
 
@@ -120,9 +135,7 @@
             </li>
             <li>
                 <label for="">日志:</label>
-                <div class="logs">
-                    <p>hah</p>
-                </div>
+                <div class="logs" id="showLog"></div>
             </li>
             <li>
                 <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
@@ -147,6 +160,21 @@
     const getEl = function (selector) {
         return document.querySelector(selector)
     }
+    const getNowFormatDate = () => {
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    }
 
     const { dialog } = electron.remote;
 
@@ -163,9 +191,24 @@
         getEl("#showFolderPath").value = path
     }
 
-    function getExelData() {
+    function addLog(state, message) {
+        var p = document.createElement("p")
+        var span = document.createElement("span")
+        var time = document.createElement("time")
+        var message = document.createTextNode(message)
 
+        span.classList.add(state ? "success" : "error")
+        span.innerText = "[ok]"
+
+        time.innerText = getNowFormatDate()
+
+        p.appendChild(span)
+        p.appendChild(time)
+        p.append(message)
+        getEl("#showLog").append(p)
     }
+
+    addLog(false, 123123)
 
     getEl('#handleClickFile').addEventListener('click', function () {
         dialog.showOpenDialog(null, {
@@ -188,7 +231,7 @@
 
                         return {
                             key: item[1],
-                            value: `[Documentation]    *案例源：* ${item[0]}
+                            value: `${'\r\n'}[Documentation]    *案例源：* ${item[0]} ${'\r\n'}
 ...
 ...    *案例编号：${item[1]}
 ...
@@ -209,6 +252,7 @@
 
                 console.dir(templateData)
 
+
             });
 
         })
@@ -227,17 +271,28 @@
         })
     }, false)
 
-    getEl('#handleClickExecu').addEventListener('click', function () {
-        // const allFiles = fs.readdirSync(foldPath, "utf-8")
-        // const txtFiles = allFiles.filter(file => {
-        //     if (file.endsWith('.txt')) {
-        //         return file
-        //     }
-        // })
-        // console.dir(txtFiles)
-        updateFileMatchPlace('./test/base.txt', templateData) // 正则匹配
-        // 逐行匹配
 
+
+
+    getEl('#handleClickExecu').addEventListener('click', function () {
+        // 判断检验
+
+        const allFiles = fs.readdirSync(foldPath, "utf-8")
+        const txtFiles = allFiles.filter(file => {
+            return file.endsWith('.txt')
+        });
+
+        Promise.all(txtFiles.map(fileName => {
+            const textPath = path.join(foldPath, fileName)
+            updateFileMatchPlace(textPath, templateData)// 正则匹配
+        })).then(res => {
+            addLog(true, "全部执行成功！")
+        }).catch(() => {
+            addLog(false, "执行失败")
+        })
+
+
+        // 逐行匹配
 
     }, false)
 
