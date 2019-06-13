@@ -29,9 +29,9 @@
 
         .btn {
             display: inline-block;
+            width: 50px;
             height: 36px;
             line-height: 36px;
-            border: 1px solid #ddd;
             padding: 0 20px;
             color: #fff;
             background: #f86;
@@ -72,6 +72,7 @@
             display: flex;
             list-style: none;
             margin-bottom: 12px;
+            justify-content: flex-end;
         }
 
         .main label {
@@ -80,7 +81,8 @@
         }
 
         .main .btn {
-            flex: 3;
+            /* flex: 3; */
+            float: right;
         }
 
         .showPath {
@@ -93,14 +95,17 @@
 
         .logs {
             flex: 15;
-            height: 120px;
+            height: 240px;
             border: 1px solid #ddd;
+            overflow-y: auto;
         }
 
         .logs p {
             color: #555;
             line-height: 20px;
             margin: 0;
+            word-break: break-all;
+            margin-bottom: 5px;
         }
 
         .logs span {
@@ -114,7 +119,9 @@
         .logs span.error {
             color: #d9534f;
         }
+
         .logs time {
+            color: #f5f;
             padding-right: 10px;
         }
     </style>
@@ -134,12 +141,13 @@
                 <a href="javascript:;" class="btn" id="handleClickFolder">浏览</a>
             </li>
             <li>
+                <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
+            </li>
+            <li>
                 <label for="">日志:</label>
                 <div class="logs" id="showLog"></div>
             </li>
-            <li>
-                <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
-            </li>
+
         </ul>
     </div>
 </body>
@@ -154,12 +162,17 @@
     const ipc = require('electron').ipcRenderer
     const xlsx = require('node-xlsx');
     const core = require('./src/core')
+    const tool = require('./src/core/updateFileByLine.js')
 
     const updateFileMatchPlace = core.updateFileMatchPlace
+
+    const readFileAsLine = tool.readFileAsLine
+
 
     const getEl = function (selector) {
         return document.querySelector(selector)
     }
+
     const getNowFormatDate = () => {
         var date = new Date();
         var seperator1 = "-";
@@ -180,7 +193,6 @@
 
     let templateData
     let foldPath
-
 
     function setTempletePath(path) {
         getEl("#showTempletePath").value = path
@@ -208,8 +220,6 @@
         getEl("#showLog").append(p)
     }
 
-    addLog(false, 123123)
-
     getEl('#handleClickFile').addEventListener('click', function () {
         dialog.showOpenDialog(null, {
             title: '请选择文件夹',
@@ -231,7 +241,7 @@
 
                         return {
                             key: item[1],
-                            value: `${'\r\n'}[Documentation]    *案例源：* ${item[0]} ${'\r\n'}
+                            value: `[Documentation]    *案例源：* ${item[0]}
 ...
 ...    *案例编号：${item[1]}
 ...
@@ -271,30 +281,44 @@
         })
     }, false)
 
+    console.dir(templateData)
 
-
+    function autoScroll(el) {
+        el.scroll({
+            top: el.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 
     getEl('#handleClickExecu').addEventListener('click', function () {
         // 判断检验
 
         const allFiles = fs.readdirSync(foldPath, "utf-8")
-        const txtFiles = allFiles.filter(file => {
-            return file.endsWith('.txt')
-        });
+        const txtFiles = allFiles.filter(file => file.endsWith('.txt'));
+        const filePathList = txtFiles.map(fileName => path.join(foldPath, fileName))
 
-        Promise.all(txtFiles.map(fileName => {
-            const textPath = path.join(foldPath, fileName)
-            updateFileMatchPlace(textPath, templateData)// 正则匹配
-        })).then(res => {
-            addLog(true, "全部执行成功！")
-        }).catch(() => {
-            addLog(false, "执行失败")
+        var count = 0
+        Promise.all(filePathList.map(filePath => readFileAsLine({
+            filePath,
+            process(line, writeStream) {
+                const matchResult = templateData.find(item => item.key === line)
+                if (matchResult) {
+                    count++
+                    writeStream.write("\n" + line + "\n")
+                    writeStream.write(matchResult.value)
+
+                    addLog(true, matchResult.key)
+                    autoScroll(getEl("#showLog"))
+                } else {
+                    writeStream.write(line)
+                }
+            }
+        }))).then(() => {
+            addLog(true, "执行完毕，一共" + count + "条测试案例")
+            autoScroll(getEl("#showLog"))
         })
-
-
-        // 逐行匹配
-
     }, false)
+
 
 </script>
 
