@@ -15,7 +15,7 @@
         }
 
         body {
-            /* background: #0d0d0d; */
+            background: #FFF;
             background-image: url("./src/bg.jpg");
             background-repeat: no-repeat;
             background-size: 60%;
@@ -241,21 +241,22 @@
 
                         return {
                             key: item[1],
-                            value: `[Documentation]    *案例源：* ${item[0]}
-...
-...    *案例编号：${item[1]}
-...
-...    *案例描述：${item[3]}
-...
-...    *前置条件：${item[4]}
-...
-...    *步骤描述：${item[5]}
-...
-...    *预期结果：${item[6]}
-...
-...    *作者：* ${item[7]}
-...
-...    *日期：* ${item[8]}
+                            value: `
+    [Documentation]    *案例源：* ${item[0]}
+    ...
+    ...    *案例编号：* ${item[1]}
+    ...
+    ...    *案例描述：* ${item[3]}
+    ...
+    ...    *前置条件：* ${item[4]}
+    ...
+    ...    *步骤描述：* ${item[5]}
+    ...
+    ...    *预期结果：* ${item[6]}
+    ...
+    ...    *作者：* ${item[7]}
+    ...
+    ...    *日期：* ${item[8]}
                             `
                         }
                     })
