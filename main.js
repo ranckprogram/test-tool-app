@@ -9,6 +9,8 @@ ipc.on('synchronous-message', function (event, arg) {
 
 function createWindow() {
   let windowOptions = {
+    // transparent: true,
+    // frame: false,
     width: 800, 
     height: 600,
     transparent: true,

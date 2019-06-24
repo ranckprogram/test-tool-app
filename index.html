@@ -12,14 +12,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
-        }
-
-        body {
             background: #FFF;
-            background-image: url("./src/bg.jpg");
-            background-repeat: no-repeat;
-            background-size: 60%;
-            background-position: right bottom;
         }
 
         a {
@@ -33,11 +26,11 @@
             height: 36px;
             line-height: 36px;
             padding: 0 20px;
-            color: #fff;
-            background: #f86;
-            border-radius: 4px;
+            background: #f5f5f5;
             text-align: center;
             vertical-align: middle;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
         }
 
         .wrapper {
@@ -62,40 +55,53 @@
         }
 
         .main {
-            width: 80%;
+            width: 76%;
             margin: auto;
             font-size: 16px;
             color: #333;
         }
 
         .main>li {
-            display: flex;
             list-style: none;
             margin-bottom: 12px;
-            justify-content: flex-end;
+            overflow: hidden;
         }
 
         .main label {
-            flex: 3;
+            display: block;
             line-height: 36px;
         }
 
         .main .btn {
-            /* flex: 3; */
+            width: 20%;
             float: right;
         }
 
         .showPath {
-            flex: 10;
-            height: 30px;
-            line-height: 30px;
-            vertical-align: middle;
+            display: block;
+            width: 80%;
+            margin-right: 50px;
+            line-height: 32px;
+            text-indent: 1em;
             outline: none;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-right: 0;
+            color: #385ecc;
+        }
+
+        .main .btn-exec {
+            float: none;
+            display: block;
+            margin: 20px auto 0;
+            color:#fff;
+            background: #36f;
         }
 
         .logs {
             flex: 15;
-            height: 240px;
+            height: 180px;
+            padding: 0 10px;
             border: 1px solid #ddd;
             overflow-y: auto;
         }
@@ -121,8 +127,13 @@
         }
 
         .logs time {
-            color: #f5f;
+            color: #999;
             padding-right: 10px;
+        }
+
+        .foot {
+            text-align: center;
+            color: #36f;
         }
     </style>
 </head>
@@ -131,24 +142,26 @@
     <div class="wrapper">
         <ul class="main">
             <li>
-                <label for="">选择模板:</label>
-                <input type="text" class="showPath" id="showTempletePath">
+                <label for="">测试案例附件:</label>
                 <a href="javascript:;" class="btn" id="handleClickFile">浏览</a>
+                <input type="text" class="showPath" id="showTempletePath">
             </li>
             <li>
-                <label for="">选择目标:</label>
-                <input type="text" class="showPath" id="showFolderPath">
+                <label for="">选择目标文件夹:</label>
                 <a href="javascript:;" class="btn" id="handleClickFolder">浏览</a>
+                <input type="text" class="showPath" id="showFolderPath">
             </li>
             <li>
-                <a href="javascript:;" class="btn" id="handleClickExecu">执行</a>
+                <a href="javascript:;" class="btn btn-exec" id="handleClickExecu">执行</a>
             </li>
             <li>
                 <label for="">日志:</label>
                 <div class="logs" id="showLog"></div>
             </li>
-
         </ul>
+        <footer>
+            <p class="foot">自动化注释小工具</p>
+        </footer>
     </div>
 </body>
 <script src="./src/js/tools.js"></script>

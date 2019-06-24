@@ -57,5 +57,9 @@ npm run pack
 
 ![avatar](/screen/screen03.png)
 
+> 第二版UI
+
+![avatar](/screen/screen04.png)
+
 
 
