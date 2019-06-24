@@ -1,5 +1,4 @@
 const { app, BrowserWindow, Menu } = require('electron')
-const menuConfig = require('./src/menu')
 var event = require('./src/event.js')
 const ipc = require('electron').ipcMain
 
@@ -37,15 +36,8 @@ function createWindow() {
 }
 
 app.on('ready', function () {
-
-  const menu = Menu.buildFromTemplate(menuConfig)
-  Menu.setApplicationMenu(menu) // 设置菜单部分
   createWindow()
-
-  console.dir(222)
-
   event.on('onChangeFile', function (f) { console.log(f) })
-
 })
 
 app.on('window-all-closed', () => {
